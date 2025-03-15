@@ -112,13 +112,24 @@ func (d downloader) downloadModelSpecificFiles(modelType string) error {
 }
 
 func (d downloader) downloadFile(name string) (err error) {
+	if err = d.internalDownloadFile(name, d.bucketURL); err == nil {
+		return nil
+	}
+	// Try to download from ModelScope repository as fallback
+	if errNew := d.internalDownloadFile(name, d.bucketURLModelScope); errNew == nil {
+		return nil
+	}
+	return err
+}
+
+func (d downloader) internalDownloadFile(name string, fmter func(string) string) error {
 	fPath := filepath.Join(d.modelPath, name)
 	if info, err := os.Stat(fPath); !d.overwriteIfExist && err == nil && !info.IsDir() {
 		log.Debug().Str("file", fPath).Msg("model file already exists, skipping download")
 		return nil
 	}
 
-	url := d.bucketURL(name)
+	url := fmter(name)
 	log.Debug().Str("url", url).Str("destination", fPath).Msg("downloading")
 
 	f, err := os.Create(fPath)
@@ -133,13 +144,7 @@ func (d downloader) downloadFile(name string) (err error) {
 
 	resp, err := d.httpGet(url)
 	if err != nil {
-		// Try to download from ModelScope repository as fallback
-		url = d.bucketURLModelScope(name)
-		log.Debug().Str("url", url).Str("destination", fPath).Msg("downloading")
-		resp, err = d.httpGet(url)
-		if err != nil {
-			return fmt.Errorf("error getting %#v: %w", url, err)
-		}
+		return fmt.Errorf("error getting %#v: %w", url, err)
 	}
 	defer func() {
 		if e := resp.Body.Close(); e != nil && err == nil {
@@ -178,5 +183,5 @@ func (d downloader) bucketURL(fileName string) string {
 }
 
 func (d downloader) bucketURLModelScope(fileName string) string {
-	return fmt.Sprintf(huggingFaceCoPrefix, d.modelName, defaultMSRevision, name)
+	return fmt.Sprintf(huggingFaceCoPrefix, d.modelName, defaultMSRevision, fileName)
 }
