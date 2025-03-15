@@ -20,7 +20,13 @@ const (
 	// "https://huggingface.co/{model_id}/resolve/{revision}/{filename}"
 	huggingFaceCoPrefix = "https://huggingface.co/%s/resolve/%s/%s"
 	// Default revision name for fetching model from Hugging Face repository
-	defaultRevision = "main"
+	defaultHFRevision = "main"
+
+	// Model Scope repository URL, in the format:
+	// "https://modelscope.cn/models/{model_id}/resolve/{revision}/{filename}"
+	modelScopeCnPrefix = "https://modelscope.cn/models/%s/resolve/%s/%s"
+	// Default revision name for fetching model from Hugging Face repository
+	defaultMSRevision = "master"
 )
 
 // supportedModelsFiles contains the set of all supported model types as keys,
@@ -33,7 +39,7 @@ var supportedModelsFiles = map[string][]string{
 	"electra": {"pytorch_model.bin", "vocab.txt", "tokenizer_config.json"},
 }
 
-// Download downloads a supported pre-trained model from huggingface.co
+// Download downloads a supported pre-trained model from huggingface.co / modelscope.cn
 // repositories.
 //
 // A model typically consists of a set of different files to be downloaded.
@@ -127,7 +133,13 @@ func (d downloader) downloadFile(name string) (err error) {
 
 	resp, err := d.httpGet(url)
 	if err != nil {
-		return fmt.Errorf("error getting %#v: %w", url, err)
+		// Try to download from ModelScope repository as fallback
+		url = d.bucketURLModelScope(name)
+		log.Debug().Str("url", url).Str("destination", fPath).Msg("downloading")
+		resp, err = d.httpGet(url)
+		if err != nil {
+			return fmt.Errorf("error getting %#v: %w", url, err)
+		}
 	}
 	defer func() {
 		if e := resp.Body.Close(); e != nil && err == nil {
@@ -162,5 +174,9 @@ func (d downloader) httpGet(url string) (*http.Response, error) {
 }
 
 func (d downloader) bucketURL(fileName string) string {
-	return fmt.Sprintf(huggingFaceCoPrefix, d.modelName, defaultRevision, fileName)
+	return fmt.Sprintf(huggingFaceCoPrefix, d.modelName, defaultHFRevision, fileName)
+}
+
+func (d downloader) bucketURLModelScope(fileName string) string {
+	return fmt.Sprintf(huggingFaceCoPrefix, d.modelName, defaultMSRevision, name)
 }

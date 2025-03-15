@@ -12,10 +12,12 @@ import (
 const (
 	// DefaultModel is a BERT pretrained model on English language using a masked language modeling (MLM) objective.
 	// Model card: https://huggingface.co/bert-base-cased
+	// Model card: https://modelscope.cn/models/AI-ModelScope/bert-base-cased
 	DefaultModel = "bert-base-cased"
 
 	// DefaultItalianModel is a BERT pretrained model on Italian language using a masked language modeling (MLM) objective.
 	// Model card: https://huggingface.co/dbmdz/bert-base-italian-cased
+	// Model card: https://modelscope.cn/models/dbmdz/bert-base-italian-cased
 	DefaultItalianModel = "dbmdz/bert-base-italian-cased"
 )
 

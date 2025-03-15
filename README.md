@@ -1,6 +1,6 @@
 # Cybertron
 
-Cybertron is a package in pure Go built upon [spaGO](https://github.com/nlpodyssey/spago) that provides Go developers with an easy interface to use NLP technologies, without needing other programming languages or complex frameworks. It's designed for using pre-trained Transformer models available on the [HuggingFace models repository](https://huggingface.co/models).
+Cybertron is a package in pure Go built upon [spaGO](https://github.com/nlpodyssey/spago) that provides Go developers with an easy interface to use NLP technologies, without needing other programming languages or complex frameworks. It's designed for using pre-trained Transformer models available on the [HuggingFace models repository](https://huggingface.co/models) or [ModelScope models repository](https://modelscope.cn/models).
 
 The package is primarily aimed at running **inference** with the possibility of adding fine-tuning in the future.
 

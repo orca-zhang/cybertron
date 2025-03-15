@@ -12,6 +12,7 @@ import (
 const (
 	// DefaultEnglishModel is a model for extractive question-answering for the English language.
 	// Model card: https://huggingface.co/deepset/bert-base-cased-squad2
+	// Model card: https://modelscope.cn/models/deepset/bert-base-cased-squad2
 	DefaultEnglishModel = "deepset/bert-base-cased-squad2"
 
 	// DefaultItalianModel is a model for extractive question-answering for the Italian language.
