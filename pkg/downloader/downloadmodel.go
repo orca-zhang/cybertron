@@ -183,5 +183,5 @@ func (d downloader) bucketURL(fileName string) string {
 }
 
 func (d downloader) bucketURLModelScope(fileName string) string {
-	return fmt.Sprintf(huggingFaceCoPrefix, d.modelName, defaultMSRevision, fileName)
+	return fmt.Sprintf(modelScopeCnPrefix, d.modelName, defaultMSRevision, fileName)
 }
