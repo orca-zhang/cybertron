@@ -132,16 +132,6 @@ func (d downloader) internalDownloadFile(name string, fmter func(string) string)
 	url := fmter(name)
 	log.Debug().Str("url", url).Str("destination", fPath).Msg("downloading")
 
-	f, err := os.Create(fPath)
-	if err != nil {
-		return fmt.Errorf("error creating file %#v: %w", fPath, err)
-	}
-	defer func() {
-		if e := f.Close(); e != nil && err == nil {
-			err = fmt.Errorf("error closing file %#v: %w", fPath, e)
-		}
-	}()
-
 	resp, err := d.httpGet(url)
 	if err != nil {
 		return fmt.Errorf("error getting %#v: %w", url, err)
@@ -160,6 +150,15 @@ func (d downloader) internalDownloadFile(name string, fmter func(string) string)
 	prog.Start()
 	defer prog.Stop()
 
+	f, err := os.Create(fPath)
+	if err != nil {
+		return fmt.Errorf("error creating file %#v: %w", fPath, err)
+	}
+	defer func() {
+		if e := f.Close(); e != nil && err == nil {
+			err = fmt.Errorf("error closing file %#v: %w", fPath, e)
+		}
+	}()
 	_, err = io.Copy(f, io.TeeReader(resp.Body, prog))
 	if err != nil {
 		return fmt.Errorf("error downloading %#v to %#v: %w", url, fPath, err)

@@ -31,3 +31,22 @@ func TestDownloadModel(t *testing.T) {
 	assert.FileExists(t, filepath.Join(dir, modelName, "vocab.json"))
 	assert.FileExists(t, filepath.Join(dir, modelName, "merges.txt"))
 }
+
+func TestDownloadModelModelScopeFallback(t *testing.T) {
+	if os.Getenv("TEST_MODEL_DOWNLOAD") == "" {
+		// We don't want to flood Hugging Face with real requests every the tests run.
+		t.Skip("skipping test - set env var TEST_MODEL_DOWNLOAD to run this test")
+	}
+	dir := t.TempDir()
+	modelName := "orcazhang/empty_repo"
+
+	err := Download(dir, modelName, false, "")
+
+	require.NoError(t, err)
+
+	assert.DirExists(t, filepath.Join(dir, modelName))
+	assert.FileExists(t, filepath.Join(dir, modelName, "config.json"))
+	assert.FileExists(t, filepath.Join(dir, modelName, "pytorch_model.bin"))
+	assert.FileExists(t, filepath.Join(dir, modelName, "vocab.json"))
+	assert.FileExists(t, filepath.Join(dir, modelName, "merges.txt"))
+}
